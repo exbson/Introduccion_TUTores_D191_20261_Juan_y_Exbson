@@ -240,13 +240,31 @@
             renderContent();
         }
 
-        async function aceptarTutoria(id) {
-            await fetch('/api/tutorias/aceptar', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ tutoriaId: id, alumnoNombre: currentUser.nombre })
-            });
-            renderContent();
+       async function aceptarTutoria(id) {
+    const res = await fetch('/api/tutorias');
+    const tutorias = await res.json();
+    const tutoria = tutorias.find(t => t.id === id);
+
+    // Crear fecha completa de la tutoría
+    const fechaTutoria = new Date(`${tutoria.fecha}T${tutoria.hora}`);
+    const ahora = new Date();
+
+    // Verificar si ya expiró
+    if (ahora > fechaTutoria) {
+        alert("⏰ El tiempo para seleccionar esta tutoría ha expirado.");
+        return;
+    }
+
+    await fetch('/api/tutorias/aceptar', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ 
+            tutoriaId: id, 
+            alumnoNombre: currentUser.nombre 
+        })
+    });
+
+    renderContent();
         }
     </script>
 </body>
