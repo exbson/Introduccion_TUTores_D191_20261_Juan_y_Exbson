@@ -1,166 +1,219 @@
 const express = require('express');
+const cors = require('cors');
+
 const app = express();
-const path = require('path');
+const PORT = 3000;
 
+app.use(cors());
 app.use(express.json());
-app.use(express.static('.'));
+app.use(express.static(__dirname));
 
-// --- BASE DE DATOS TEMPORAL ---
+/* =========================
+   BASE DE DATOS EN MEMORIA
+   ========================= */
+
 let usuarios = [
-    { id: 1, nombre: "admin", pass: "123", rol: "administrador" },
-    { id: 2, nombre: "profe1", pass: "123", rol: "docente" },
-    { id: 3, nombre: "alumno1", pass: "123", rol: "estudiante" }
+{ id:1, nombre:"admin", password:"123", rol:"administrador"},
+{ id:2, nombre:"docente1", password:"123", rol:"docente"},
+{ id:3, nombre:"estudiante1", password:"123", rol:"estudiante"}
 ];
 
 let tutorias = [];
 
+let comentarios = [];
 
-// --- RUTAS DE USUARIOS ---
 
-app.post('/api/login', (req, res) => {
+/* =========================
+   LOGIN
+   ========================= */
 
-    const { nombre, pass } = req.body;
+app.post('/api/login',(req,res)=>{
 
-    const user = usuarios.find(u => u.nombre === nombre && u.pass === pass);
+const {nombre,password}=req.body;
 
-    if (user) {
-        res.json({ success: true, user });
-    } else {
-        res.status(401).json({ success: false });
-    }
+const usuario = usuarios.find(
+u => u.nombre === nombre && u.password === password
+);
+
+if(usuario){
+
+res.json({
+success:true,
+usuario
+});
+
+}else{
+
+res.json({
+success:false
+});
+
+}
 
 });
 
 
-app.post('/api/registro', (req, res) => {
+/* =========================
+   VER USUARIOS
+   ========================= */
 
-    const { nombre, pass, rol } = req.body;
+app.get('/api/usuarios',(req,res)=>{
 
-    if (usuarios.find(u => u.nombre === nombre)) {
-        return res.status(400).json({
-            success: false,
-            message: "Usuario ya existe"
-        });
-    }
-
-    const nuevo = {
-        id: Date.now(),
-        nombre,
-        pass,
-        rol
-    };
-
-    usuarios.push(nuevo);
-
-    res.json({ success: true });
+res.json(usuarios);
 
 });
 
 
-app.get('/api/usuarios', (req, res) => {
-    res.json(usuarios);
+/* =========================
+   ELIMINAR USUARIO
+   ========================= */
+
+app.delete('/api/usuarios/:id',(req,res)=>{
+
+const id = parseInt(req.params.id);
+
+usuarios = usuarios.filter(
+u => u.id !== id
+);
+
+res.json({
+success:true
 });
-
-
-app.delete('/api/usuarios/:id', (req, res) => {
-
-    usuarios = usuarios.filter(u => u.id != req.params.id);
-
-    res.json({ success: true });
-
-});
-
-
-// --- RUTAS DE TUTORIAS ---
-
-app.get('/api/tutorias', (req, res) => {
-    res.json(tutorias);
-});
-
-
-app.post('/api/tutorias', (req, res) => {
-
-    const { materia, lugar, hora, fecha, modalidad, docente } = req.body;
-
-    const nuevaTutoria = {
-        id: Date.now(),
-        materia,
-        lugar,
-        hora,
-        fecha,
-        modalidad,
-        docente,
-        estudiantes: [],
-        comentarios: []   // 👈 necesario para guardar comentarios
-    };
-
-    tutorias.push(nuevaTutoria);
-
-    res.json({ success: true });
 
 });
 
 
-app.delete('/api/tutorias/:id', (req, res) => {
+/* =========================
+   CREAR TUTORIA
+   ========================= */
 
-    tutorias = tutorias.filter(t => t.id != req.params.id);
+app.post('/api/tutorias',(req,res)=>{
 
-    res.json({ success: true });
+const {materia,lugar,fecha,hora,modalidad,docente} = req.body;
+
+const nuevaTutoria = {
+
+id: Date.now(),
+
+materia,
+
+lugar,
+
+fecha,
+
+hora,
+
+modalidad,
+
+docente,
+
+estudiantes:[]
+
+};
+
+tutorias.push(nuevaTutoria);
+
+res.json({
+success:true
+});
 
 });
 
 
-app.post('/api/tutorias/aceptar', (req, res) => {
+/* =========================
+   VER TUTORIAS
+   ========================= */
 
-    const { tutoriaId, alumnoNombre } = req.body;
+app.get('/api/tutorias',(req,res)=>{
 
-    const tutoria = tutorias.find(t => t.id == tutoriaId);
-
-    if (tutoria && !tutoria.estudiantes.includes(alumnoNombre)) {
-
-        tutoria.estudiantes.push(alumnoNombre);
-
-    }
-
-    res.json({ success: true });
+res.json(tutorias);
 
 });
 
 
-// --- COMENTARIOS DE TUTORIAS ---
+/* =========================
+   INSCRIBIRSE A TUTORIA
+   ========================= */
 
-app.post('/api/tutorias/comentario', (req, res) => {
+app.post('/api/inscribirse',(req,res)=>{
 
-    const { tutoriaId, usuario, texto } = req.body;
+const {tutoriaId,estudiante} = req.body;
 
-    const tutoria = tutorias.find(t => t.id == tutoriaId);
+const tutoria = tutorias.find(
+t => t.id === tutoriaId
+);
 
-    if (!tutoria) {
+if(tutoria){
 
-        return res.status(404).json({
-            success: false,
-            message: "Tutoría no encontrada"
-        });
+tutoria.estudiantes.push(estudiante);
 
-    }
+res.json({
+success:true
+});
 
-    tutoria.comentarios.push({
-        usuario,
-        texto
-    });
+}else{
 
-    res.json({ success: true });
+res.json({
+success:false
+});
+
+}
 
 });
 
 
-// --- INICIAR SERVIDOR ---
+/* =========================
+   AGREGAR COMENTARIO
+   ========================= */
 
-app.listen(3000, () => {
+app.post('/api/comentarios',(req,res)=>{
 
-    console.log("----------------------------------------------");
-    console.log("¡EXITO! El servidor está listo.");
-    console.log("Abre en tu navegador: http://localhost:3000");
-    console.log("----------------------------------------------");
+const {tutoriaId,usuario,comentario} = req.body;
+
+const nuevoComentario = {
+
+id: Date.now(),
+
+tutoriaId,
+
+usuario,
+
+comentario
+
+};
+
+comentarios.push(nuevoComentario);
+
+res.json({
+success:true
+});
+
+});
+
+
+/* =========================
+   VER COMENTARIOS
+   ========================= */
+
+app.get('/api/comentarios/:tutoriaId',(req,res)=>{
+
+const id = parseInt(req.params.tutoriaId);
+
+const lista = comentarios.filter(
+c => c.tutoriaId === id
+);
+
+res.json(lista);
+
+});
+
+
+/* =========================
+   INICIAR SERVIDOR
+   ========================= */
+
+app.listen(PORT,()=>{
+
+console.log("Servidor funcionando en http://localhost:"+PORT);
 
 });
