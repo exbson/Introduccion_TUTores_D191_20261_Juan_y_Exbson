@@ -1,271 +1,499 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TutorConnect Pro | Sistema de Tutorías</title>
-    <style>
-        :root { 
-            --p: #79b929; 
-            --danger: #ef4444; 
-            --success: #10b981; 
-            --bg: #1a1a1a; 
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        body { 
-            font-family: 'Segoe UI', sans-serif; 
-            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
-                        url('fondo-uts.jpg');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            margin: 0; 
-            padding: 20px; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center;
-            min-height: 100vh;
-        }
+<title>TutorConnect Pro | Sistema de Tutorías</title>
 
-        .card { 
-            background: rgba(255, 255, 255, 0.98); 
-            padding: 2.5rem; 
-            border-radius: 16px; 
-            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5); 
-            width: 100%; 
-            max-width: 600px; 
-            backdrop-filter: blur(10px);
-        }
+<style>
 
-        .hidden { display: none; }
-        
-        input, select { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box; }
-        button { padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s; width: 100%; }
-        button:hover { opacity: 0.9; transform: translateY(-1px); }
-        
-        .item { border: 1px solid #e2e8f0; padding: 15px; margin: 15px 0; border-radius: 10px; background: #fff; }
-        .tag { font-size: 0.75rem; padding: 4px 8px; border-radius: 20px; font-weight: bold; text-transform: uppercase; }
-        .header-dash { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 15px; margin-bottom: 20px; }
-        
-        .tutoria-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.9rem; margin: 10px 0; }
-    </style>
+:root{
+--p:#79b929;
+--danger:#ef4444;
+--success:#10b981;
+}
+
+body{
+font-family:'Segoe UI',sans-serif;
+background:linear-gradient(rgba(0,0,0,0.7),rgba(0,0,0,0.7)),url('fondo-uts.jpg');
+background-size:cover;
+background-position:center;
+background-attachment:fixed;
+margin:0;
+padding:20px;
+display:flex;
+justify-content:center;
+align-items:center;
+min-height:100vh;
+}
+
+.card{
+background:rgba(255,255,255,0.97);
+padding:2.5rem;
+border-radius:16px;
+box-shadow:0 20px 25px rgba(0,0,0,0.5);
+width:100%;
+max-width:650px;
+}
+
+.hidden{
+display:none;
+}
+
+input,select{
+width:100%;
+padding:12px;
+margin:8px 0;
+border-radius:8px;
+border:1px solid #ddd;
+}
+
+button{
+padding:12px;
+border:none;
+border-radius:8px;
+cursor:pointer;
+font-weight:bold;
+width:100%;
+}
+
+.item{
+border:1px solid #e2e8f0;
+padding:15px;
+margin:15px 0;
+border-radius:10px;
+background:#fff;
+}
+
+.tag{
+font-size:0.75rem;
+padding:4px 8px;
+border-radius:20px;
+font-weight:bold;
+}
+
+.header-dash{
+display:flex;
+justify-content:space-between;
+align-items:center;
+border-bottom:2px solid #eee;
+padding-bottom:15px;
+margin-bottom:20px;
+}
+
+.tutoria-grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px;
+font-size:0.9rem;
+margin:10px 0;
+}
+
+</style>
 </head>
+
 <body>
 
-    <div id="view-auth" class="card">
-        <h1 style="text-align: center; color: var(--p);">🎓 TutorConnect</h1>
-        <h2 id="auth-title" style="text-align: center;">Iniciar Sesión</h2>
-        
-        <div id="login-form">
-            <input type="text" id="user" placeholder="Nombre de usuario">
-            <input type="password" id="pass" placeholder="Contraseña">
-            <button style="background: var(--p); color: white;" onclick="login()">Entrar al Sistema</button>
-            <p onclick="toggleAuth(true)" style="cursor:pointer; color: var(--p); text-align:center; font-size: 0.9rem;">¿Eres nuevo? Crea una cuenta aquí</p>
-        </div>
+<div id="view-auth" class="card">
 
-        <div id="register-form" class="hidden">
-            <input type="text" id="reg-user" placeholder="Nombre completo">
-            <input type="password" id="reg-pass" placeholder="Crea una contraseña">
-            <select id="reg-rol">
-                <option value="estudiante">Soy Estudiante</option>
-                <option value="docente">Soy Docente</option>
-                <option value="administrador">Soy Administrador</option>
-            </select>
-            <button style="background: var(--success); color: white;" onclick="registrar()">Registrarse ahora</button>
-            <p onclick="toggleAuth(false)" style="cursor:pointer; text-align:center; font-size: 0.9rem;">Ya tengo cuenta, volver al login</p>
-        </div>
-    </div>
+<h1 style="text-align:center;color:var(--p)">🎓 TutorConnect</h1>
 
-    <div id="view-dash" class="card hidden">
-        <div class="header-dash">
-            <div>
-                <h2 id="user-display" style="margin: 0; color: var(--p);">Hola, Usuario</h2>
-                <span id="role-tag" class="tag" style="background: #e0e7ff; color: var(--p);">ROL</span>
-            </div>
-            <button onclick="location.reload()" style="width:auto; background:var(--danger); color:white; padding: 8px 15px;">Cerrar Sesión</button>
-        </div>
-        
-        <div id="content"></div>
-    </div>
+<h2 id="auth-title" style="text-align:center">Iniciar Sesión</h2>
 
-    <script>
-        let currentUser = null;
+<div id="login-form">
 
-        function toggleAuth(isReg) {
-            document.getElementById('login-form').classList.toggle('hidden', isReg);
-            document.getElementById('register-form').classList.toggle('hidden', !isReg);
-            document.getElementById('auth-title').innerText = isReg ? "Registro de Usuario" : "Iniciar Sesión";
-        }
+<input type="text" id="user" placeholder="Nombre de usuario">
+<input type="password" id="pass" placeholder="Contraseña">
 
-        async function login() {
-            const res = await fetch('/api/login', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ nombre: document.getElementById('user').value, pass: document.getElementById('pass').value })
-            });
-            if (res.ok) {
-                const data = await res.json();
-                currentUser = data.user;
-                showDash();
-            } else alert("Datos incorrectos, intenta de nuevo.");
-        }
+<button style="background:var(--p);color:white" onclick="login()">Entrar al Sistema</button>
 
-        async function registrar() {
-            const res = await fetch('/api/registro', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ 
-                    nombre: document.getElementById('reg-user').value, 
-                    pass: document.getElementById('reg-pass').value, 
-                    rol: document.getElementById('reg-rol').value 
-                })
-            });
-            if(res.ok) {
-                alert("¡Cuenta creada! Por favor inicia sesión.");
-                toggleAuth(false);
-            } else alert("El usuario ya existe.");
-        }
+<p onclick="toggleAuth(true)" style="cursor:pointer;color:var(--p);text-align:center;font-size:0.9rem">
 
-        function showDash() {
-            document.getElementById('view-auth').classList.add('hidden');
-            document.getElementById('view-dash').classList.remove('hidden');
-            document.getElementById('user-display').innerText = `Hola, ${currentUser.nombre}`;
-            document.getElementById('role-tag').innerText = currentUser.rol.toUpperCase();
-            renderContent();
-        }
+¿Eres nuevo? Crea una cuenta
 
-        async function renderContent() {
-            const container = document.getElementById('content');
-            container.innerHTML = "";
+</p>
 
-            if (currentUser.rol === 'administrador') {
-                container.innerHTML = "<h3>🛠️ Panel de Administración</h3><p>Gestiona todos los usuarios del sistema:</p>";
-                const res = await fetch('/api/usuarios');
-                const users = await res.json();
-                users.forEach(u => {
-                    container.innerHTML += `
-                        <div class="item" style="display:flex; justify-content:space-between; align-items:center;">
-                            <span><b>${u.nombre}</b> <span class="tag" style="background:#f1f5f9;">${u.rol}</span></span>
-                            ${u.nombre !== currentUser.nombre ? `<button onclick="eliminarUsuario(${u.id})" style="width:auto; background:var(--danger); color:white; padding:5px 10px;">Eliminar</button>` : '<i>(Tú)</i>'}
-                        </div>`;
-                });
-            }
+</div>
 
-            if (currentUser.rol === 'docente') {
-                container.innerHTML = `
-                    <div style="background:#f1f5f9; padding:15px; border-radius:10px; margin-bottom:20px;">
-                        <h3 style="margin-top:0;">📝 Publicar Nueva Tutoría</h3>
-                        <input type="text" id="materia" placeholder="Nombre de la Materia (ej: Matemáticas I)">
-                        <input type="text" id="lugar" placeholder="Lugar o Link de Reunión">
-                        <div style="display:flex; gap:10px;">
-                            <input type="date" id="fecha">
-                            <input type="time" id="hora">
-                        </div>
-                        <select id="modalidad">
-                            <option value="Presencial">📍 Presencial</option>
-                            <option value="Virtual">💻 Virtual</option>
-                        </select>
-                        <button style="background:var(--p); color:white" onclick="crearTutoria()">Publicar ahora</button>
-                    </div>
-                    <h3>Mis Tutorías</h3>
-                    <div id="lista-tutorias"></div>`;
-                cargarTutorias();
-            }
+<div id="register-form" class="hidden">
 
-            if (currentUser.rol === 'estudiante') {
-                container.innerHTML = "<h3>📚 Tutorías Disponibles</h3><div id='lista-tutorias'></div>";
-                cargarTutorias();
-            }
-        }
+<input type="text" id="reg-user" placeholder="Nombre completo">
 
-        async function crearTutoria() {
-            const data = {
-                materia: document.getElementById('materia').value,
-                lugar: document.getElementById('lugar').value,
-                fecha: document.getElementById('fecha').value,
-                hora: document.getElementById('hora').value,
-                modalidad: document.getElementById('modalidad').value,
-                docente: currentUser.nombre
-            };
-            if(!data.materia || !data.fecha) return alert("Llena los campos obligatorios");
-            await fetch('/api/tutorias', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(data)
-            });
-            renderContent();
-        }
+<input type="password" id="reg-pass" placeholder="Contraseña">
 
-        async function cargarTutorias() {
-            const res = await fetch('/api/tutorias');
-            const data = await res.json();
-            const div = document.getElementById('lista-tutorias');
-            
-            const tutoriasFiltradas = currentUser.rol === 'docente' 
-                ? data.filter(t => t.docente === currentUser.nombre) 
-                : data;
+<select id="reg-rol">
 
-            tutoriasFiltradas.forEach(t => {
-                const inscrito = t.estudiantes.includes(currentUser.nombre);
-                div.innerHTML += `
-                    <div class="item">
-                        <div style="display:flex; justify-content:space-between; align-items:start;">
-                            <h4 style="margin:0; color:var(--p);">${t.materia}</h4>
-                            <span class="tag" style="background:#dcfce7; color:#166534;">${t.modalidad}</span>
-                        </div>
-                        <div class="tutoria-grid">
-                            <div class="info-row">📅 ${t.fecha}</div>
-                            <div class="info-row">🕒 ${t.hora}</div>
-                            <div class="info-row">📍 ${t.lugar}</div>
-                            <div class="info-row">👨‍🏫 Prof. ${t.docente}</div>
-                        </div>
-                        <p style="font-size:0.8rem; color:#64748b; margin: 10px 0;">👥 Estudiantes inscritos: ${t.estudiantes.length} (${t.estudiantes.join(', ') || 'ninguno'})</p>
-                        ${currentUser.rol === 'docente' ? 
-                            `<button onclick="borrarTutoria(${t.id})" style="background:var(--danger); color:white;">Eliminar Tutoría</button>` : 
-                            `<button onclick="aceptarTutoria(${t.id})" ${inscrito ? 'disabled' : ''} style="background:${inscrito ? '#94a3b8' : 'var(--success)'}; color:white;">
-                                ${inscrito ? '✅ Ya estás inscrito' : 'Inscribirse a la clase'}
-                            </button>`
-                        }
-                    </div>`;
-            });
-        }
+<option value="estudiante">Estudiante</option>
+<option value="docente">Docente</option>
+<option value="administrador">Administrador</option>
 
-        async function eliminarUsuario(id) {
-            await fetch(`/api/usuarios/${id}`, { method: 'DELETE' });
-            renderContent();
-        }
+</select>
 
-        async function borrarTutoria(id) {
-            await fetch(`/api/tutorias/${id}`, { method: 'DELETE' });
-            renderContent();
-        }
+<button style="background:var(--success);color:white" onclick="registrar()">
 
-       async function aceptarTutoria(id) {
-    const res = await fetch('/api/tutorias');
-    const tutorias = await res.json();
-    const tutoria = tutorias.find(t => t.id === id);
+Registrarse
 
-    // Crear fecha completa de la tutoría
-    const fechaTutoria = new Date(`${tutoria.fecha}T${tutoria.hora}`);
-    const ahora = new Date();
+</button>
 
-    // Verificar si ya expiró
-    if (ahora > fechaTutoria) {
-        alert("⏰ El tiempo para seleccionar esta tutoría ha expirado.");
-        return;
-    }
+<p onclick="toggleAuth(false)" style="cursor:pointer;text-align:center;font-size:0.9rem">
 
-    await fetch('/api/tutorias/aceptar', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ 
-            tutoriaId: id, 
-            alumnoNombre: currentUser.nombre 
-        })
-    });
+Volver al login
 
-    renderContent();
-        }
-    </script>
+</p>
+
+</div>
+
+</div>
+
+
+<div id="view-dash" class="card hidden">
+
+<div class="header-dash">
+
+<div>
+
+<h2 id="user-display" style="margin:0;color:var(--p)"></h2>
+
+<span id="role-tag" class="tag"></span>
+
+</div>
+
+<button onclick="location.reload()" style="background:var(--danger);color:white;width:auto;padding:8px 15px">
+
+Cerrar sesión
+
+</button>
+
+</div>
+
+<div id="content"></div>
+
+</div>
+
+
+<script>
+
+let currentUser=null;
+
+function toggleAuth(reg){
+
+document.getElementById('login-form').classList.toggle('hidden',reg);
+
+document.getElementById('register-form').classList.toggle('hidden',!reg);
+
+document.getElementById('auth-title').innerText=reg?'Registro':'Iniciar Sesión';
+
+}
+
+
+async function login(){
+
+const res=await fetch('/api/login',{
+
+method:'POST',
+
+headers:{'Content-Type':'application/json'},
+
+body:JSON.stringify({
+
+nombre:document.getElementById('user').value,
+
+pass:document.getElementById('pass').value
+
+})
+
+});
+
+if(res.ok){
+
+const data=await res.json();
+
+currentUser=data.user;
+
+showDash();
+
+}else{
+
+alert("Datos incorrectos");
+
+}
+
+}
+
+
+async function registrar(){
+
+const res=await fetch('/api/registro',{
+
+method:'POST',
+
+headers:{'Content-Type':'application/json'},
+
+body:JSON.stringify({
+
+nombre:document.getElementById('reg-user').value,
+
+pass:document.getElementById('reg-pass').value,
+
+rol:document.getElementById('reg-rol').value
+
+})
+
+});
+
+if(res.ok){
+
+alert("Cuenta creada");
+
+toggleAuth(false);
+
+}else{
+
+alert("Usuario ya existe");
+
+}
+
+}
+
+
+function showDash(){
+
+document.getElementById('view-auth').classList.add('hidden');
+
+document.getElementById('view-dash').classList.remove('hidden');
+
+document.getElementById('user-display').innerText=`Hola, ${currentUser.nombre}`;
+
+document.getElementById('role-tag').innerText=currentUser.rol;
+
+renderContent();
+
+}
+
+
+async function renderContent(){
+
+const container=document.getElementById('content');
+
+container.innerHTML="";
+
+
+if(currentUser.rol==="docente"){
+
+container.innerHTML=`
+
+<h3>Publicar Tutoría</h3>
+
+<input id="materia" placeholder="Materia">
+
+<input id="lugar" placeholder="Lugar">
+
+<input type="date" id="fecha">
+
+<input type="time" id="hora">
+
+<select id="modalidad">
+
+<option value="Presencial">Presencial</option>
+
+<option value="Virtual">Virtual</option>
+
+</select>
+
+<button onclick="crearTutoria()" style="background:var(--p);color:white">
+
+Crear Tutoría
+
+</button>
+
+<h3>Mis tutorías</h3>
+
+<div id="lista-tutorias"></div>
+
+`;
+
+cargarTutorias();
+
+}
+
+
+if(currentUser.rol==="estudiante"){
+
+container.innerHTML=`
+
+<h3>Tutorías Disponibles</h3>
+
+<div id="lista-tutorias"></div>
+
+`;
+
+cargarTutorias();
+
+}
+
+}
+
+
+async function crearTutoria(){
+
+const data={
+
+materia:document.getElementById('materia').value,
+
+lugar:document.getElementById('lugar').value,
+
+fecha:document.getElementById('fecha').value,
+
+hora:document.getElementById('hora').value,
+
+modalidad:document.getElementById('modalidad').value,
+
+docente:currentUser.nombre
+
+};
+
+await fetch('/api/tutorias',{
+
+method:'POST',
+
+headers:{'Content-Type':'application/json'},
+
+body:JSON.stringify(data)
+
+});
+
+renderContent();
+
+}
+
+
+async function cargarTutorias(){
+
+const res=await fetch('/api/tutorias');
+
+const data=await res.json();
+
+const div=document.getElementById('lista-tutorias');
+
+div.innerHTML="";
+
+
+data.forEach(t=>{
+
+const inscrito=t.estudiantes.includes(currentUser.nombre);
+
+div.innerHTML+=`
+
+<div class="item">
+
+<h4 style="color:var(--p)">${t.materia}</h4>
+
+<div class="tutoria-grid">
+
+<div>📅 ${t.fecha}</div>
+
+<div>🕒 ${t.hora}</div>
+
+<div>📍 ${t.lugar}</div>
+
+<div>👨‍🏫 ${t.docente}</div>
+
+</div>
+
+<p>👥 ${t.estudiantes.length} estudiantes</p>
+
+${currentUser.rol==="estudiante"?
+
+`<button onclick="aceptarTutoria(${t.id})"
+
+${inscrito?'disabled':''}
+
+style="background:${inscrito?'#94a3b8':'var(--success)'};color:white">
+
+${inscrito?'Ya inscrito':'Inscribirse'}
+
+</button>`:''}
+
+<hr>
+
+<b>Comentarios:</b>
+
+<div>
+
+${(t.comentarios||[]).map(c=>`<p><b>${c.usuario}</b>: ${c.texto}</p>`).join("")}
+
+</div>
+
+${currentUser.rol==="estudiante"?
+
+`<input id="comentario-${t.id}" placeholder="Escribir comentario">
+
+<button onclick="enviarComentario(${t.id})" style="background:#3b82f6;color:white">
+
+Enviar comentario
+
+</button>`:''}
+
+</div>
+
+`;
+
+});
+
+}
+
+
+async function aceptarTutoria(id){
+
+await fetch('/api/tutorias/aceptar',{
+
+method:'POST',
+
+headers:{'Content-Type':'application/json'},
+
+body:JSON.stringify({
+
+tutoriaId:id,
+
+alumnoNombre:currentUser.nombre
+
+})
+
+});
+
+renderContent();
+
+}
+
+
+async function enviarComentario(id){
+
+const texto=document.getElementById(`comentario-${id}`).value;
+
+await fetch('/api/tutorias/comentario',{
+
+method:'POST',
+
+headers:{'Content-Type':'application/json'},
+
+body:JSON.stringify({
+
+tutoriaId:id,
+
+usuario:currentUser.nombre,
+
+texto:texto
+
+})
+
+});
+
+renderContent();
+
+}
+
+</script>
+
 </body>
 </html>
