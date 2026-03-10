@@ -58,15 +58,30 @@ res.json({success:true});
 
 });
 
-/* USUARIOS */
+/* LISTAR USUARIOS */
 
 app.get('/api/usuarios',(req,res)=>{
 res.json(usuarios);
 });
 
+/* ELIMINAR USUARIO */
+
 app.delete('/api/usuarios/:id',(req,res)=>{
 
 const id=parseInt(req.params.id);
+
+const usuario = usuarios.find(u=>u.id===id);
+
+/* evitar eliminar administrador */
+
+if(usuario && usuario.rol==="administrador"){
+return res.json({
+success:false,
+mensaje:"No se puede eliminar un administrador"
+});
+}
+
+/* eliminar usuario */
 
 usuarios=usuarios.filter(u=>u.id!==id);
 
@@ -74,11 +89,22 @@ res.json({success:true});
 
 });
 
+/* BLOQUEAR / DESBLOQUEAR USUARIO */
+
 app.put('/api/usuarios/bloquear/:id',(req,res)=>{
 
 const id=parseInt(req.params.id);
 
 const usuario=usuarios.find(u=>u.id===id);
+
+/* evitar bloquear administrador */
+
+if(usuario && usuario.rol==="administrador"){
+return res.json({
+success:false,
+mensaje:"No se puede bloquear un administrador"
+});
+}
 
 if(usuario){
 usuario.activo=!usuario.activo;
@@ -174,7 +200,7 @@ return res.json({success:false});
 }
 
 if(!tutoria.inscritos){
-tutoria.inscritos = 0;
+tutoria.inscritos=0;
 }
 
 tutoria.inscritos++;

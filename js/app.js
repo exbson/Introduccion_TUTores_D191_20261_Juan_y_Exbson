@@ -295,11 +295,16 @@ div.innerHTML+=`
 
 <div>
 <b>${u.nombre}</b> (${u.rol})
+${u.activo ? "" : "<span style='color:red'> (Bloqueado)</span>"}
 </div>
 
 <div>
 
-<button onclick="eliminarUsuario('${u.nombre}')" class="btn-danger">
+<button onclick="bloquearUsuario(${u.id})" class="btn-primary">
+${u.activo ? "Bloquear" : "Desbloquear"}
+</button>
+
+<button onclick="eliminarUsuario(${u.id})" class="btn-danger">
 Eliminar
 </button>
 
@@ -315,18 +320,26 @@ Eliminar
 
 /* ELIMINAR USUARIO */
 
-async function eliminarUsuario(nombre){
+async function eliminarUsuario(id){
 
 if(!confirm("¿Eliminar usuario?")) return;
 
-await fetch('/api/admin/eliminarUsuario',{
-method:'POST',
-headers:{'Content-Type':'application/json'},
-body:JSON.stringify({nombre})
+await fetch('/api/usuarios/'+id,{
+method:'DELETE'
 });
 
 cargarUsuarios();
 cargarStats();
+
+}
+
+async function bloquearUsuario(id){
+
+await fetch('/api/usuarios/bloquear/'+id,{
+method:'PUT'
+});
+
+cargarUsuarios();
 
 }
 
