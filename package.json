@@ -1,19 +1,16 @@
 {
   "name": "tutorias-app",
   "version": "1.0.0",
-  "description": "",
+  "description": "Sistema de tutorias",
   "main": "server.js",
-"scripts": {
-  "start": "node server.js"
-}
   "type": "commonjs",
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
-    "cors": "^2.8.5",
     "express": "^5.2.1",
-    "jsonwebtoken": "^9.0.3"
+    "jsonwebtoken": "^9.0.3",
+    "cors": "^2.8.5"
   }
 }
