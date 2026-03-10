@@ -1,158 +1,78 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>TutorConnect Pro | Sistema de Tutorías</title>
+<title>TutorConnect</title>
 
-<style>
+<link rel="stylesheet" href="css/style.css">
 
-:root{
---p:#79b929;
---danger:#ef4444;
---success:#10b981;
---admin:#6366f1;
-}
-
-body{
-font-family:'Segoe UI',sans-serif;
-background:linear-gradient(rgba(0,0,0,0.7),rgba(0,0,0,0.7)),url('fondo-uts.jpg');
-background-size:cover;
-background-position:center;
-background-attachment:fixed;
-margin:0;
-padding:20px;
-display:flex;
-justify-content:center;
-align-items:center;
-min-height:100vh;
-}
-
-.card{
-background:rgba(255,255,255,0.97);
-padding:2.5rem;
-border-radius:16px;
-box-shadow:0 20px 25px rgba(0,0,0,0.5);
-width:100%;
-max-width:700px;
-}
-
-.hidden{
-display:none;
-}
-
-input,select{
-width:100%;
-padding:12px;
-margin:8px 0;
-border-radius:8px;
-border:1px solid #ddd;
-}
-
-button{
-padding:12px;
-border:none;
-border-radius:8px;
-cursor:pointer;
-font-weight:bold;
-width:100%;
-margin-top:6px;
-}
-
-.item{
-border:1px solid #e2e8f0;
-padding:15px;
-margin:15px 0;
-border-radius:10px;
-background:#fff;
-}
-
-.tag{
-font-size:0.75rem;
-padding:4px 8px;
-border-radius:20px;
-font-weight:bold;
-background:#eee;
-}
-
-.header-dash{
-display:flex;
-justify-content:space-between;
-align-items:center;
-border-bottom:2px solid #eee;
-padding-bottom:15px;
-margin-bottom:20px;
-}
-
-.tutoria-grid{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:10px;
-font-size:0.9rem;
-margin:10px 0;
-}
-
-</style>
 </head>
 
 <body>
 
+<div class="main-container">
+
+<!-- LOGIN / REGISTRO -->
+
 <div id="view-auth" class="card">
 
-<h1 style="text-align:center;color:var(--p)">🎓 TutorConnect</h1>
+<h1 class="title">TutorConnect</h1>
 
-<h2 id="auth-title" style="text-align:center">Iniciar Sesión</h2>
+<h2 id="auth-title">Iniciar sesión</h2>
 
 <div id="login-form">
 
-<input type="text" id="user" placeholder="Usuario">
-<input type="password" id="pass" placeholder="Contraseña">
+<input id="user" placeholder="Usuario">
+<input id="pass" type="password" placeholder="Contraseña">
 
-<button style="background:var(--p);color:white" onclick="login()">
-Entrar al Sistema
+<button onclick="login()" class="btn-primary">
+Entrar
 </button>
 
-<p onclick="toggleAuth(true)" style="cursor:pointer;color:var(--p);text-align:center;font-size:0.9rem">
-¿Eres nuevo? Crea una cuenta
+<p class="link" onclick="toggleAuth(true)">
+Crear cuenta
 </p>
 
 </div>
 
 <div id="register-form" class="hidden">
 
-<input type="text" id="reg-user" placeholder="Nombre">
-
-<input type="password" id="reg-pass" placeholder="Contraseña">
+<input id="reg-user" placeholder="Usuario">
+<input id="reg-pass" type="password" placeholder="Contraseña">
 
 <select id="reg-rol">
 <option value="estudiante">Estudiante</option>
 <option value="docente">Docente</option>
 </select>
 
-<button style="background:var(--success);color:white" onclick="registrar()">
+<button onclick="registrar()" class="btn-success">
 Registrarse
 </button>
 
-<p onclick="toggleAuth(false)" style="cursor:pointer;text-align:center;font-size:0.9rem">
-Volver al login
+<p class="link" onclick="toggleAuth(false)">
+Volver
 </p>
 
 </div>
 
 </div>
 
+<!-- DASHBOARD -->
 
 <div id="view-dash" class="card hidden">
 
-<div class="header-dash">
+<div class="header">
 
 <div>
-<h2 id="user-display" style="margin:0;color:var(--p)"></h2>
-<span id="role-tag" class="tag"></span>
+<h2 id="user-display"></h2>
+<span id="role-tag"></span>
 </div>
 
-<button onclick="location.reload()" style="background:var(--danger);color:white;width:auto;padding:8px 15px">
+<button onclick="logout()" class="btn-danger">
 Cerrar sesión
 </button>
 
@@ -162,282 +82,9 @@ Cerrar sesión
 
 </div>
 
-
-<script>
-
-let currentUser=null;
-
-/* LOGIN */
-
-async function login(){
-
-const res=await fetch('/api/login',{
-method:'POST',
-headers:{'Content-Type':'application/json'},
-body:JSON.stringify({
-nombre:user.value,
-password:pass.value
-})
-});
-
-const data=await res.json();
-
-if(data.success){
-
-currentUser=data.usuario;
-
-showDash();
-
-}else{
-
-alert("Datos incorrectos");
-
-}
-
-}
-
-/* REGISTRO */
-
-async function registrar(){
-
-const res=await fetch('/api/registro',{
-method:'POST',
-headers:{'Content-Type':'application/json'},
-body:JSON.stringify({
-nombre:document.getElementById('reg-user').value,
-password:document.getElementById('reg-pass').value,
-rol:document.getElementById('reg-rol').value
-})
-});
-
-const data=await res.json();
-
-if(data.success){
-
-alert("Cuenta creada");
-
-toggleAuth(false);
-
-}else{
-
-alert("Usuario ya existe");
-
-}
-
-}
-
-/* VISTAS */
-
-function toggleAuth(reg){
-
-login-form.classList.toggle('hidden',reg);
-
-register-form.classList.toggle('hidden',!reg);
-
-auth-title.innerText=reg?'Registro':'Iniciar Sesión';
-
-}
-
-function showDash(){
-
-view-auth.classList.add('hidden');
-
-view-dash.classList.remove('hidden');
-
-user-display.innerText="Hola, "+currentUser.nombre;
-
-role-tag.innerText=currentUser.rol;
-
-renderContent();
-
-}
-
-/* CONTENIDO SEGUN ROL */
-
-async function renderContent(){
-
-const container=document.getElementById('content');
-
-container.innerHTML="";
-
-/* DOCENTE */
-
-if(currentUser.rol==="docente"){
-
-container.innerHTML=`
-
-<h3>Publicar Tutoría</h3>
-
-<input id="materia" placeholder="Materia">
-<input id="lugar" placeholder="Lugar">
-<input type="date" id="fecha">
-<input type="time" id="hora">
-
-<button onclick="crearTutoria()" style="background:var(--p);color:white">
-Crear Tutoría
-</button>
-
-<h3>Mis tutorías</h3>
-
-<div id="lista-tutorias"></div>
-
-`;
-
-cargarTutorias();
-
-}
-
-/* ESTUDIANTE */
-
-if(currentUser.rol==="estudiante"){
-
-container.innerHTML=`
-
-<h3>Tutorías Disponibles</h3>
-
-<div id="lista-tutorias"></div>
-
-`;
-
-cargarTutorias();
-
-}
-
-/* ADMIN */
-
-if(currentUser.rol==="administrador"){
-
-container.innerHTML=`
-
-<h3 style="color:var(--admin)">Panel Administrador</h3>
-
-<h4>Usuarios registrados</h4>
-
-<div id="lista-usuarios"></div>
-
-<h4>Tutorías creadas</h4>
-
-<div id="lista-tutorias"></div>
-
-`;
-
-cargarUsuarios();
-
-cargarTutorias();
-
-}
-
-}
-
-/* CREAR TUTORIA */
-
-async function crearTutoria(){
-
-await fetch('/api/tutorias',{
-method:'POST',
-headers:{'Content-Type':'application/json'},
-body:JSON.stringify({
-materia:materia.value,
-lugar:lugar.value,
-fecha:fecha.value,
-hora:hora.value,
-docente:currentUser.nombre
-})
-});
-
-renderContent();
-
-}
-
-/* CARGAR TUTORIAS */
-
-async function cargarTutorias(){
-
-const res=await fetch('/api/tutorias');
-
-const data=await res.json();
-
-const div=document.getElementById('lista-tutorias');
-
-div.innerHTML="";
-
-data.forEach(t=>{
-
-div.innerHTML+=`
-
-<div class="item">
-
-<b>${t.materia}</b>
-
-<p>${t.fecha} - ${t.hora}</p>
-
-<p>Docente: ${t.docente}</p>
-
-${currentUser.rol==="administrador"?
-`<button onclick="eliminarTutoria(${t.id})" style="background:var(--danger);color:white">Eliminar</button>`:""}
-
 </div>
 
-`;
-
-});
-
-}
-
-/* ELIMINAR TUTORIA */
-
-async function eliminarTutoria(id){
-
-await fetch('/api/tutorias/'+id,{method:'DELETE'});
-
-renderContent();
-
-}
-
-/* USUARIOS */
-
-async function cargarUsuarios(){
-
-const res=await fetch('/api/usuarios');
-
-const data=await res.json();
-
-const div=document.getElementById('lista-usuarios');
-
-div.innerHTML="";
-
-data.forEach(u=>{
-
-div.innerHTML+=`
-
-<div class="item">
-
-<b>${u.nombre}</b> (${u.rol})
-
-<button onclick="eliminarUsuario(${u.id})"
-style="background:var(--danger);color:white">
-
-Eliminar
-
-</button>
-
-</div>
-
-`;
-
-});
-
-}
-
-async function eliminarUsuario(id){
-
-await fetch('/api/usuarios/'+id,{method:'DELETE'});
-
-renderContent();
-
-}
-
-</script>
+<script src="/js/app.js"></script>
 
 </body>
 </html>

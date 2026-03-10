@@ -1,0 +1,136 @@
+body{
+font-family:Arial;
+background-image:url("../fondo-uts.jpg");
+background-size:cover;
+background-position:center;
+background-repeat:no-repeat;
+margin:0;
+padding:0;
+display:flex;
+justify-content:center;
+align-items:center;
+min-height:100vh;
+}
+
+/* TARJETA PRINCIPAL */
+
+.card{
+background:white;
+padding:30px;
+border-radius:10px;
+width:500px; /* antes 900px */
+max-width:95%;
+box-shadow:0 10px 20px rgba(0,0,0,0.2);
+margin:auto;
+}
+
+.hidden{
+display:none;
+}
+
+input,select,textarea{
+width:100%;
+padding:10px;
+margin:6px 0;
+border-radius:6px;
+border:1px solid #ccc;
+}
+
+button{
+padding:10px;
+border:none;
+border-radius:6px;
+cursor:pointer;
+margin-top:5px;
+}
+
+.header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:20px;
+}
+
+.item{
+background:#f8fafc;
+padding:12px;
+border-radius:8px;
+margin:8px 0;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+gap:10px;
+margin-bottom:20px;
+}
+
+.stat{
+background:#f1f5f9;
+padding:15px;
+border-radius:8px;
+text-align:center;
+}
+
+#chat-box{
+height:200px;
+overflow-y:auto;
+border:1px solid #ccc;
+padding:10px;
+margin-bottom:10px;
+}
+
+.btn-primary{
+background:#6366f1;
+color:white;
+}
+
+.btn-success{
+background:green;
+color:white;
+}
+
+.btn-danger{
+background:red;
+color:white;
+}
+.main-container{
+width:100%;
+display:flex;
+justify-content:center;
+align-items:center;
+flex-direction:column;
+}
+
+.title{
+text-align:center;
+color:#6366f1;
+}
+
+.link{
+cursor:pointer;
+color:#6366f1;
+margin-top:10px;
+}
+#login-form button{
+display:block;
+margin:10px auto;
+}
+
+#login-form p{
+text-align:center;
+}
+#auth-title{
+text-align:center;
+}
+#register-form button{
+display:block;
+margin:10px auto;
+}
+
+#register-form p{
+text-align:center;
+}
