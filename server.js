@@ -7,6 +7,7 @@ const db = require("./config/db")
 
 const app = express()
 
+
 /* ================= MIDDLEWARE ================= */
 
 app.use(cors())
