@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+<meta charset="UTF-8">
+<title>Panel Docente</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<style>
+
+body{
+font-family:'Poppins',sans-serif;
+}
+
+#nombreUsuario{
+color:white;
+font-weight:bold;
+flex-grow:1;
+text-align:center;
+font-size:18px;
+}
+
+.comentarios{
+margin-top:15px;
+border-top:1px solid rgba(0,0,0,0.2);
+padding-top:10px;
+}
+
+.comentario{
+background:#ffffff;
+padding:10px;
+border-radius:8px;
+margin-bottom:8px;
+font-size:14px;
+color:#222;
+border-left:4px solid #198754;
+}
+
+</style>
+
+</head>
+
+<body class="docente-bg">
+
+<nav class="navbar navbar-dark bg-success">
+
+<div class="container-fluid d-flex align-items-center">
+
+<span class="navbar-brand">
+<i class="fa-solid fa-chalkboard-user"></i> Panel Docente
+</span>
+
+<div id="nombreUsuario"></div>
+
+<button class="btn btn-light" onclick="logout()">
+Cerrar sesión
+</button>
+
+</div>
+
+</nav>
+
+<div class="container mt-4">
+
+<div class="card mb-4 shadow-sm">
+<div class="card-body">
+
+<h4>Crear Tutoría</h4>
+
+<input id="materia" class="form-control mb-2" placeholder="Materia">
+<input id="salon" class="form-control mb-2" placeholder="Salón">
+<input id="fecha" type="date" class="form-control mb-2">
+<input id="hora" type="time" class="form-control mb-2">
+
+<select id="tipo" class="form-control mb-3">
+<option value="presencial">Presencial</option>
+<option value="virtual">Virtual</option>
+</select>
+
+<button class="btn btn-success w-100" onclick="crearTutoria()">
+Crear tutoría
+</button>
+
+</div>
+</div>
+
+<h4>Tutorías creadas</h4>
+
+<div class="row" id="listaTutorias"></div>
+
+</div>
+
+<script>
+
+function logout(){
+window.location.href="/"
+}
+
+function cargarUsuario(){
+
+fetch("/usuarioActual")
+.then(res=>res.json())
+.then(data=>{
+
+if(data.nombre){
+document.getElementById("nombreUsuario").innerHTML="👤 "+data.nombre
+}
+
+})
+
+}
+
+function formatearFecha(fecha){
+let f = new Date(fecha)
+return f.toLocaleDateString("es-CO")
+}
+
+function formatearHora(hora){
+let h = new Date("1970-01-01T"+hora)
+return h.toLocaleTimeString("es-CO",{hour:"numeric",minute:"2-digit"})
+}
+
+function crearTutoria(){
+
+const materia=document.getElementById("materia").value
+const salon=document.getElementById("salon").value
+const fecha=document.getElementById("fecha").value
+const hora=document.getElementById("hora").value
+const tipo=document.getElementById("tipo").value
+
+if(!materia || !salon || !fecha || !hora){
+Swal.fire("Error","Debes llenar todos los campos","error")
+return
+}
+
+fetch("/crearTutoria",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({materia,salon,fecha,hora,tipo})
+})
+.then(res=>res.json())
+.then(data=>{
+
+Swal.fire('Creado','Tutoría creada correctamente','success')
+
+document.getElementById("materia").value=""
+document.getElementById("salon").value=""
+document.getElementById("fecha").value=""
+document.getElementById("hora").value=""
+
+cargarTutorias()
+
+})
+
+}
+
+function cargarTutorias(){
+
+fetch("/tutorias")
+
+.then(res=>res.json())
+
+.then(data=>{
+
+const cont=document.getElementById("listaTutorias")
+
+cont.innerHTML=""
+
+data.forEach(t=>{
+
+let comentariosHTML=""
+
+if(t.comentarios && t.comentarios.length>0){
+
+t.comentarios.forEach(c=>{
+
+comentariosHTML+=`
+<div class="comentario">
+<b>${c.usuario}</b>: ${c.texto.replace(/</g,"&lt;").replace(/>/g,"&gt;")}
+</div>
+`
+
+})
+
+}else{
+comentariosHTML="<small>Sin comentarios</small>"
+}
+
+cont.innerHTML+=`
+
+<div class="col-md-4 mb-3">
+
+<div class="card shadow-sm">
+
+<div class="card-body">
+
+<h5>${t.materia}</h5>
+
+<p>
+<b>👨‍🏫 Docente:</b> ${t.docente}<br>
+<b>🏫 Salón:</b> ${t.salon}<br>
+<b>📅 Fecha:</b> ${formatearFecha(t.fecha)}<br>
+<b>⏰ Hora:</b> ${formatearHora(t.hora)}<br>
+<b>📘 Modalidad:</b> ${t.tipo}<br>
+<b>👨‍🎓 Reservas:</b> ${t.reservas}
+</p>
+
+<button class="btn btn-danger w-100 mb-2" onclick="eliminarTutoria(${t.id})">
+Eliminar
+</button>
+
+<div class="comentarios">
+
+<h6>Comentarios</h6>
+
+${comentariosHTML}
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+`
+
+})
+
+})
+
+}
+
+function eliminarTutoria(id){
+
+fetch("/eliminarTutoria",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({id})
+})
+
+.then(res=>res.json())
+
+.then(data=>{
+
+if(data.error){
+Swal.fire("Error",data.error,"error")
+}else{
+Swal.fire("Eliminado","Tutoría eliminada correctamente","success")
+}
+
+cargarTutorias()
+
+})
+
+}
+
+/* CARGA INICIAL */
+
+cargarUsuario()
+cargarTutorias()
+
+
+</script>
+
+</body>
+</html>

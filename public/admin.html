@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+<meta charset="UTF-8">
+<title>Panel Administrador</title>
+
+<link rel="stylesheet" href="css/style.css">
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<style>
+
+body{
+font-family:'Poppins',sans-serif;
+background:#f4f6fb;
+}
+
+#nombreUsuario{
+color:white;
+font-weight:600;
+font-size:18px;
+flex-grow:1;
+text-align:center;
+}
+
+.estado-activo{
+color:green;
+font-weight:600;
+}
+
+.estado-bloqueado{
+color:red;
+font-weight:600;
+}
+
+</style>
+
+</head>
+
+<body class="admin-bg">
+
+<nav class="navbar navbar-dark bg-dark">
+
+<div class="container-fluid d-flex align-items-center">
+
+<span class="navbar-brand">
+<i class="fa-solid fa-user-shield"></i>
+Panel Administrador
+</span>
+
+<div id="nombreUsuario"></div>
+
+<button class="btn btn-light" onclick="logout()">
+<i class="fa-solid fa-right-from-bracket"></i>
+Cerrar sesión
+</button>
+
+</div>
+
+</nav>
+
+<div class="container mt-4">
+
+<div class="card mb-4">
+
+<div class="card-body">
+
+<h4>Crear usuario</h4>
+
+<div class="row">
+
+<div class="col-md-4">
+<input id="nuevoUsuario" class="form-control" placeholder="Nombre usuario">
+</div>
+
+<div class="col-md-4">
+<input id="nuevoPass" type="password" class="form-control" placeholder="Contraseña">
+</div>
+
+<div class="col-md-2">
+
+<select id="nuevoRol" class="form-control">
+<option value="estudiante">Estudiante</option>
+<option value="docente">Docente</option>
+</select>
+
+</div>
+
+<div class="col-md-2">
+
+<button class="btn btn-success w-100" onclick="crearUsuario()">
+Crear
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="card-body">
+
+<h4>Usuarios del sistema</h4>
+
+<table id="tablaUsuarios" class="display">
+
+<thead>
+<tr>
+<th>ID</th>
+<th>Nombre</th>
+<th>Rol</th>
+<th>Estado</th>
+<th>Acciones</th>
+</tr>
+</thead>
+
+<tbody id="usuariosBody"></tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+function logout(){
+fetch("/logout")
+window.location.href="/"
+}
+
+function cargarUsuario(){
+
+fetch("/usuarioActual")
+.then(res=>res.json())
+.then(data=>{
+document.getElementById("nombreUsuario").innerHTML="👤 "+data.nombre
+})
+
+}
+
+function cargarUsuarios(){
+
+fetch("/usuarios")
+
+.then(res=>res.json())
+
+.then(data=>{
+
+if ($.fn.DataTable.isDataTable('#tablaUsuarios')) {
+$('#tablaUsuarios').DataTable().destroy()
+}
+
+const tabla=document.getElementById("usuariosBody")
+
+tabla.innerHTML=""
+
+data.forEach(u=>{
+
+let botonEstado=""
+
+if(u.estado==="bloqueado"){
+botonEstado=`<button class="btn btn-success btn-sm" onclick="activar(${u.id})">✔</button>`
+}else{
+botonEstado=`<button class="btn btn-warning btn-sm" onclick="bloquear(${u.id})">🚫</button>`
+}
+
+let estadoClase = u.estado === "activo" ? "estado-activo" : "estado-bloqueado"
+
+tabla.innerHTML+=`
+
+<tr>
+<td>${u.id}</td>
+<td>${u.nombre}</td>
+<td>${u.rol}</td>
+<td class="${estadoClase}">${u.estado}</td>
+
+<td>
+
+${botonEstado}
+
+<button class="btn btn-danger btn-sm" onclick="eliminarUsuario(${u.id})">
+🗑
+</button>
+
+</td>
+
+</tr>
+
+`
+
+})
+
+$('#tablaUsuarios').DataTable()
+
+})
+
+}
+
+function crearUsuario(){
+
+const usuario=document.getElementById("nuevoUsuario").value
+const password=document.getElementById("nuevoPass").value
+const rol=document.getElementById("nuevoRol").value
+
+fetch("/registro",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({usuario,password,rol})
+})
+.then(()=>cargarUsuarios())
+
+}
+
+function bloquear(id){
+
+fetch("/bloquear",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({id})
+})
+.then(()=>cargarUsuarios())
+
+}
+
+function activar(id){
+
+fetch("/activar",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({id})
+})
+.then(()=>cargarUsuarios())
+
+}
+
+function eliminarUsuario(id){
+
+fetch("/eliminarUsuario",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({id})
+})
+.then(()=>cargarUsuarios())
+
+}
+
+cargarUsuario()
+cargarUsuarios()
+
+</script>
+
+</body>
+</html>

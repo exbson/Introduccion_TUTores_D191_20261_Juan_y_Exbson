@@ -9,8 +9,23 @@
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
+    "body-parser": "^2.2.2",
     "cors": "^2.8.6",
     "express": "^5.2.1",
-    "jsonwebtoken": "^9.0.3"
-  }
+    "express-session": "^1.19.0",
+    "jsonwebtoken": "^9.0.3",
+    "mysql": "^2.18.1",
+    "mysql2": "^3.19.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/exbson/Introduccion_TUTores_D191_20261_Juan_y_Exbson.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/exbson/Introduccion_TUTores_D191_20261_Juan_y_Exbson/issues"
+  },
+  "homepage": "https://github.com/exbson/Introduccion_TUTores_D191_20261_Juan_y_Exbson#readme"
 }
