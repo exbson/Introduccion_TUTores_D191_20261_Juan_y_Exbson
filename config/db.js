@@ -1,17 +1,16 @@
 const mysql = require("mysql")
 
 const db = mysql.createConnection({
-  host: "127.0.0.1",
-  user: "root",
-  password: "",
-  database: "tutorias",
-  port: 3306,
-  multipleStatements: true
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  port: 3306
 })
 
 db.connect((err) => {
   if (err) {
-    console.error("❌ Error conectando a MySQL:", err)
+    console.log("❌ Error conectando a MySQL:", err)
   } else {
     console.log("✅ Conectado a MySQL")
   }
