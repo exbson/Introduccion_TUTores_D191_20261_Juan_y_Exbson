@@ -1,5 +1,5 @@
 Para el desarrollo de la página web sobre tutorías se utilizarán los lenguajes JavaScript, HTML y CSS, y se empleará Render para su almacenamiento y procesamiento.
-Gracias a su versatilidad, aún no está completamente definido el uso de una base de datos como MariaDB.
+Gracias a su versatilidad, aún no está completamente definido el uso de una base de datos como MariaDB, al final nos decidimos por mysql.
 La página web permitirá el acceso a diferentes tipos de cuentas, como estudiantes, docentes y administradores. 
-Asimismo, permitirá la creación de tutorías por parte de los docentes, las cuales podrán ser aceptadas por los estudiantes.
-El administrador podrá visualizar las cuentas registradas y eliminarlas en caso de que sea necesario.
+Asimismo, permitirá la creación de tutorías por parte de los docentes, las cuales podrán ser aceptadas y comentadas por los estudiantes.
+El administrador podrá visualizar las cuentas registradas y eliminarlas en caso de que sea necesario, ademas podra bloquear cuentas y a la vez puede crear cuentas para estudiantes y docentes.
