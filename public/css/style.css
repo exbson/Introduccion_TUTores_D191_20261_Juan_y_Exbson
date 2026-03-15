@@ -13,7 +13,11 @@ h4{
 }
 
 /* ================= FONDOS ================= */
-
+.logo-img {
+    width: 40px; 
+    vertical-align: middle; 
+    margin-right: 10px;
+}
 /* ADMIN */
 .admin-bg{
     background-image: url("../img/fondo_de_administrador.png");
